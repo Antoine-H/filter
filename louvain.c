@@ -267,10 +267,10 @@ int main(int argc,char** argv){
   time_t t0 = time(NULL), t1, t2, t3;
   srand(time(NULL));
 
-  printf("Reading edgelist from file %s and building adjacency array\n", argv[1]);
+  //printf("Reading edgelist from file %s and building adjacency array\n", argv[1]);
   g = readadjlist(argv[1]);
-  printf("Number of nodes: %lu\n", g->n);
-  printf("Number of edges: %llu\n", g->e);
+  //printf("Number of nodes: %lu\n", g->n);
+  //printf("Number of edges: %llu\n", g->e);
 
   /*
   //using more memory but reading the input text file only once
@@ -286,13 +286,13 @@ int main(int argc,char** argv){
   */
 
   t1 = time(NULL);
-  printf("- Time to load the graph = %ldh%ldm%lds\n", (t1-t0)/3600, ((t1-t0)%3600)/60, ((t1-t0)%60));
+  //printf("- Time to load the graph = %ldh%ldm%lds\n", (t1-t0)/3600, ((t1-t0)%3600)/60, ((t1-t0)%60));
 
-  printf("Starting louvain\n");
+  //printf("Starting louvain\n");
   part = malloc(g->n * sizeof(unsigned long));
   louvainComplete(g, part);
   t2 = time(NULL);
-  printf("- Time to compute communities = %ldh%ldm%lds\n", (t2-t1)/3600, ((t2-t1)%3600)/60, ((t2-t1)%60));
+  //printf("- Time to compute communities = %ldh%ldm%lds\n", (t2-t1)/3600, ((t2-t1)%3600)/60, ((t2-t1)%60));
   
   printf("Prints result in file %s\n", argv[2]);
   FILE* out = fopen(argv[2], "w");
@@ -301,9 +301,9 @@ int main(int argc,char** argv){
   }
   fclose(out);
   t3 = time(NULL);
-  printf("- Time to export communities = %ldh%ldm%lds\n", (t3-t2)/3600, ((t3-t2)%3600)/60, ((t3-t2)%60));
+  //printf("- Time to export communities = %ldh%ldm%lds\n", (t3-t2)/3600, ((t3-t2)%3600)/60, ((t3-t2)%60));
 
-  printf("- Overall time = %ldh%ldm%lds\n", (t3-t0)/3600, ((t3-t0)%3600)/60, ((t3-t0)%60));
+  //printf("- Overall time = %ldh%ldm%lds\n", (t3-t0)/3600, ((t3-t0)%3600)/60, ((t3-t0)%60));
 
   return 0;
 }
