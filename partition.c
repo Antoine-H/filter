@@ -336,7 +336,7 @@ long double louvainOneLevel(louvainPartition *p, adjlist *g) {
     //   compute the gain for its insertion in all neighboring communities
     //   insert it in the best community with the highest gain
     for (i = 0; i < g->n; i++) {
-      node = i;//randomOrder[nodeTmp];
+      node = randomOrder[i];//i;
       oldComm = p->node2Community[node];
       degreeW = degreeWeighted(g, node);
 
