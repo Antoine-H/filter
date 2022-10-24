@@ -419,6 +419,7 @@ unsigned long louvainComplete(adjlist *g, unsigned long *lab) {
     n = updatePartition(gp, lab, originalSize);
 
     if (improvement < MIN_IMPROVEMENT) {
+      printf("Final modularity: %Lf\n", modularity(gp, g));
       freeLouvainPartition(gp);
       break;
     }
