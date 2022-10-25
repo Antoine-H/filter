@@ -265,7 +265,7 @@ int main(int argc,char** argv){
   unsigned long i;
   unsigned int seed;
 
-  time_t t0 = time(NULL), t1, t2, t3;
+  //time_t t0 = time(NULL), t1, t2, t3;
 
   FILE* random = fopen("/dev/urandom", "r");
   if (fread(&seed, sizeof(seed), 1, random) != 1) {
@@ -294,13 +294,13 @@ int main(int argc,char** argv){
   g=mkadjlist(el);
   */
 
-  t1 = time(NULL);
+  //t1 = time(NULL);
   //printf("- Time to load the graph = %ldh%ldm%lds\n", (t1-t0)/3600, ((t1-t0)%3600)/60, ((t1-t0)%60));
 
   //printf("Starting louvain\n");
   part = malloc(g->n * sizeof(unsigned long));
   louvainComplete(g, part);
-  t2 = time(NULL);
+  //t2 = time(NULL);
   //printf("- Time to compute communities = %ldh%ldm%lds\n", (t2-t1)/3600, ((t2-t1)%3600)/60, ((t2-t1)%60));
   
   printf("Prints result in file %s\n", argv[2]);
@@ -309,7 +309,7 @@ int main(int argc,char** argv){
     fprintf(out, "%lu %lu\n", i, part[i]);
   }
   fclose(out);
-  t3 = time(NULL);
+  //t3 = time(NULL);
   //printf("- Time to export communities = %ldh%ldm%lds\n", (t3-t2)/3600, ((t3-t2)%3600)/60, ((t3-t2)%60));
 
   //printf("- Overall time = %ldh%ldm%lds\n", (t3-t0)/3600, ((t3-t0)%3600)/60, ((t3-t0)%60));
