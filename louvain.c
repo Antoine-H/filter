@@ -263,9 +263,18 @@ int main(int argc,char** argv){
   adjlist* g;
   unsigned long *part;
   unsigned long i;
+  unsigned int seed;
 
   time_t t0 = time(NULL), t1, t2, t3;
-  srand(time(NULL));
+
+  FILE* random = fopen("/dev/urandom", "r");
+  if (fread(&seed, sizeof(seed), 1, random) != 1) {
+    fprintf( stderr, "Cannot read random seed from /dev/urandom\n" );
+    exit(-1);
+  }
+  fclose(random);
+  // srand(time(NULL));
+  srand(seed);
 
   //printf("Reading edgelist from file %s and building adjacency array\n", argv[1]);
   g = readadjlist(argv[1]);
