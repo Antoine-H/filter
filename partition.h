@@ -17,7 +17,7 @@ unsigned long init(adjlist *g,unsigned long *lab);
 
 unsigned long louvain(adjlist *g, unsigned long *lab);
 
-unsigned long louvainComplete(adjlist *g, unsigned long *lab);
+long double louvainComplete(adjlist *g, unsigned long *lab);
 
 
 /**
@@ -126,7 +126,7 @@ unsigned long louvain(adjlist *g, unsigned long *part);
     @param part The final partition
     @return nothing
 */
-unsigned long louvainComplete(adjlist *g, unsigned long *part);
+long double louvainComplete(adjlist *g, unsigned long *part);
 
 
 /**

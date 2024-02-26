@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-O3 -g
+CFLAGS=-O3 -g -lm # -Wall -Wextra -Wpedantic -Wconversion -pendantic
 EXEC=louvain
 
 all: $(EXEC)

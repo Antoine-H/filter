@@ -399,12 +399,13 @@ unsigned long louvain(adjlist *g, unsigned long *lab) {
   return n;
 }
 
-unsigned long louvainComplete(adjlist *g, unsigned long *lab) {
+long double louvainComplete(adjlist *g, unsigned long *lab) {
   adjlist *init = g, *g2;
   unsigned long n, i;
   unsigned long long j;
   unsigned long originalSize = g->n;
   long double improvement;
+  long double modul;
   // Initialize partition with trivial communities
   for (i = 0; i < g->n; i++) {
     lab[i] = i;
@@ -419,7 +420,8 @@ unsigned long louvainComplete(adjlist *g, unsigned long *lab) {
     n = updatePartition(gp, lab, originalSize);
 
     if (improvement < MIN_IMPROVEMENT) {
-      printf("Final modularity: %Lf\n", modularity(gp, g));
+      modul = modularity(gp, g);
+      /* printf("Final modularity: %Lf\n", modul); */
       freeLouvainPartition(gp);
       break;
     }
@@ -438,6 +440,6 @@ unsigned long louvainComplete(adjlist *g, unsigned long *lab) {
     free_adjlist2(g);
   }
 
-  return n;
+  return modul;
 }
 
