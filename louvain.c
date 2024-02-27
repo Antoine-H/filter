@@ -435,13 +435,17 @@ unsigned long get_number_common_neighbours(unsigned long u, unsigned long v, adj
 }
 
 long double get_ecc(unsigned long u, unsigned long v, adjlist* g){
-  /*
-  printf("Degree of %llu is %llu\n", u, get_degree(u, g));
-  printf("Degree of %llu is %llu\n", v, get_degree(v, g));
-  printf("Number of common neighbours is %llu\n", get_number_common_neighbours(u, v, g));
-  printf("min is %llu\n", min(get_degree(u, g), get_degree(v, g)));
-  */
-  return (long double)get_number_common_neighbours(u, v, g) / min(get_degree(u, g), get_degree(v, g));
+  long double deg_u, deg_v;
+
+  deg_u = get_degree(u, g);
+  deg_v = get_degree(v, g);
+
+  /* Avoid division by zero */
+  if (deg_u && deg_v) {
+    return 0;
+  }
+
+  return (long double)get_number_common_neighbours(u, v, g) / min(deg_u, deg_v);
 }
 
 edge* get_ecc_above(adjlist* g, long double threshold){
