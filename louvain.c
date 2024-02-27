@@ -398,7 +398,7 @@ unsigned long* get_common_neighbours(unsigned long* neighbours_u, unsigned long*
   common_neighbours = malloc_wrapper((neighbours_u[0]+1)*sizeof(unsigned long));
 
   j = 1;
-  for (i=1; i<neighbours_u[0]; i++){
+  for (i=1; i<=neighbours_u[0]; i++){
     if (belongs_to(neighbours_u[i], neighbours_v)){
       common_neighbours[j++] = neighbours_u[i];
     }
