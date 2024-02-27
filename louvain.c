@@ -506,6 +506,7 @@ edge* get_ecc_above(adjlist* g, long double threshold){
         edge_list = realloc_wrapper(edge_list, n++*g->n, sizeof(edge));
       }
       */
+      free(neighbours_j);
     }
     free(neighbours_i);
   }
