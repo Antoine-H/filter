@@ -435,13 +435,13 @@ unsigned long get_number_common_neighbours(unsigned long u, unsigned long v, adj
 }
 
 long double get_ecc(unsigned long u, unsigned long v, adjlist* g){
-  long double deg_u, deg_v;
+  unsigned long deg_u, deg_v;
 
   deg_u = get_degree(u, g);
   deg_v = get_degree(v, g);
 
   /* Avoid division by zero */
-  if (deg_u && deg_v) {
+  if (!(deg_u && deg_v)) {
     return 0;
   }
 
