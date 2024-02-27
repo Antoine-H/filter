@@ -323,6 +323,9 @@ long double ecc_threshold(long double modul){
 
 unsigned long get_degree(unsigned long u, adjlist* g){
   /* printf("The degree of %lu is %llu\n", u, g->cd[u+1]-g->cd[u]); */
+  if (u > g->n){
+    return 0;
+  }
   return g->cd[u+1]-g->cd[u];
 }
 
@@ -330,26 +333,33 @@ unsigned long* get_neighbours(unsigned long u, adjlist* g){
   unsigned long i, j;
   unsigned long* neighbours;
 
-  /* printf("Node %llu has degree %llu\n", u, get_degree(u, g));*/
-  neighbours = malloc_wrapper((get_degree(u, g)+1)*sizeof(unsigned long));
-  /*printf("Allocated %llu unsigned long long into memory\n", get_degree(u, g)+1);*/
+  if (u > g->n){
+    neighbours = malloc_wrapper(sizeof(unsigned long));
+    neighbours[0] = 0;
+  } else {
+    /* printf("Node %llu has degree %llu\n", u, get_degree(u, g));*/
+    neighbours = malloc_wrapper((get_degree(u, g)+1)*sizeof(unsigned long));
+    /*printf("Allocated %llu unsigned long long into memory\n", get_degree(u, g)+1);*/
 
-  j = 0;
-  neighbours[j++] = get_degree(u, g);
-  for (i=g->cd[u]; i<g->cd[u+1]; i++){
-    neighbours[j++] = g->adj[i];
-    /* printf("Current size %u\n", j);*/
+    j = 0;
+    neighbours[j++] = get_degree(u, g);
+    for (i=g->cd[u]; i<g->cd[u+1]; i++){
+      neighbours[j++] = g->adj[i];
+      /* printf("Current size %u\n", j);*/
+    }
   }
-
   return neighbours;
-
 }
 
 void print_neighbours(unsigned long u, adjlist* g){
   unsigned long i;
-  printf("List of neighbours of %lu in the graph:\n", u);
-  for (i=g->cd[u]; i<g->cd[u+1]; i++){
-    printf("%lu %lu\n", i, g->adj[i]);
+  if (u > g->n){
+    printf("No such node: %lu\n", u);
+  } else {
+    printf("List of neighbours of %lu in the graph:\n", u);
+    for (i=g->cd[u]; i<g->cd[u+1]; i++){
+      printf("%lu %lu\n", i, g->adj[i]);
+    }
   }
 }
 
