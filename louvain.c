@@ -450,7 +450,7 @@ long double get_ecc(unsigned long u, unsigned long v, adjlist* g){
 
 edge* get_ecc_above(adjlist* g, long double threshold){
   edge* edge_list;
-  unsigned long i, j, k, l, n;
+  unsigned long i, j, k, n;
   unsigned long *neighbours_i, *neighbours_j;
 
   // n = g->n/2;
