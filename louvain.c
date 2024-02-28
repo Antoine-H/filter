@@ -498,12 +498,10 @@ edge* get_ecc_above(adjlist* g, long double threshold){
         edge_list[edge_list[0].s].t = neighbours_i[j];;
         printf("Size of edge_list is %lu. Allocated space is %lu edges\n", edge_list[0].s, n*g->n);
       }
-      /*
-      if (edge_list[0].s >= n*g->n-10){
-        printf("Allocating %lu more edges because edge_list already contains %lu edges\n", (n+1)*g->n, edge_list[0].s);
+      if (edge_list[0].s >= (n*g->n)-10){
+        printf("Allocating %lu edges because edge_list already contains %lu edges\n", (n+1)*g->n, edge_list[0].s);
         edge_list = realloc_wrapper(edge_list, n++*g->n, sizeof(edge));
       }
-      */
       free(neighbours_j);
     }
     free(neighbours_i);
