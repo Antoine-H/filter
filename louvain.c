@@ -479,12 +479,11 @@ edge* get_ecc_above(adjlist* g, long double threshold){
           /* Add (i, neighbours_j[k]) to edge_list */
           edge_list[0].s++;
           printf("Adding edge (%lu, %lu) at position %lu because its ECC is %Lf > %Lf\n", i, (unsigned long)neighbours_j[k], edge_list[0].s, get_ecc(i, neighbours_j[k], g), threshold);
-          unsigned long l = (unsigned long)neighbours_j[k];
           printf("Writing %zu and %zu bytes in %zu and %zu slots\n", sizeof(k), sizeof(i), sizeof(edge_list[edge_list[0].s].s), sizeof(edge_list[edge_list[0].s].t));
           /* TODO INVALID WRITE OF SIZE 8 in the two lines below. Dirty fix would
            * be to allocate n² edges. */
           edge_list[edge_list[0].s].s = i;
-          edge_list[edge_list[0].s].t = l;
+          edge_list[edge_list[0].s].t = neighbours_j[k];;
           printf("Size of edge_list is %lu. Allocated space is %lu edges\n", edge_list[0].s, n*g->n);
         }
       }
@@ -492,12 +491,11 @@ edge* get_ecc_above(adjlist* g, long double threshold){
         /* Add (i, neighbours_i[j]) to edge_list */
         edge_list[0].s++;
         printf("2Adding edge (%lu, %lu) at position %lu because its ECC is %Lf > %Lf\n", i, (unsigned long)neighbours_i[j], edge_list[0].s, get_ecc(i, neighbours_i[j], g), threshold);
-        unsigned long l = (unsigned long)neighbours_i[j];
         printf("Writing %zu and %zu bytes in %zu and %zu slots\n", sizeof(k), sizeof(i), sizeof(edge_list[edge_list[0].s].s), sizeof(edge_list[edge_list[0].s].t));
         /* TODO INVALID WRITE OF SIZE 8 in the two lines below. Dirty fix would
          * be to allocate n² edges. */
         edge_list[edge_list[0].s].s = i;
-        edge_list[edge_list[0].s].t = l;
+        edge_list[edge_list[0].s].t = neighbours_i[j];;
         printf("Size of edge_list is %lu. Allocated space is %lu edges\n", edge_list[0].s, n*g->n);
       }
       /*
