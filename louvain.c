@@ -469,12 +469,12 @@ edge* get_ecc_above(adjlist* g, long double threshold){
     //print_neighbours(i, g);
     neighbours_i = get_neighbours(i, g);
     /* For j in neighbours(i) */
-    for (j=1; j<=neighbours_i[0]; j++){
+    for (j=1; j<neighbours_i[0]; j++){
       //printf("Considering neighbour %lu\n", j);
       //neighbours_v = get_neighbours(neighbours_u[j], g);
       /* For k in neighbours(j) */
       neighbours_j = get_neighbours(neighbours_i[j], g);
-      for (k=1; k<=neighbours_j[0]; k++){
+      for (k=1; k<neighbours_j[0]; k++){
         if (get_ecc(i, neighbours_j[k], g) > threshold){
           /* Add (i, neighbours_j[k]) to edge_list */
           edge_list[0].s++;
