@@ -472,7 +472,7 @@ edge* get_ecc_above(adjlist* g, long double threshold){
       /* For k in neighbours(j) */
       neighbours_j = get_neighbours(neighbours_i[j], g);
       for (k=1; k<neighbours_j[0]; k++){
-        if (get_ecc(i, neighbours_j[k], g) > threshold){
+        if (i <= neighbours_j[k] && get_ecc(i, neighbours_j[k], g) > threshold){
           /* Add (i, neighbours_j[k]) to edge_list */
           //printf("Adding edge (%lu, %lu) at position %lu because its ECC is %Lf > %Lf\n", i, (unsigned long)neighbours_j[k], edge_list[0].s, get_ecc(i, neighbours_j[k], g), threshold);
           edge_list[++edge_list[0].s].s = i;
@@ -485,7 +485,7 @@ edge* get_ecc_above(adjlist* g, long double threshold){
           }
         }
       }
-      if (get_ecc(i, neighbours_i[j], g) > threshold){
+      if (i <= neighbours_i[j] && get_ecc(i, neighbours_i[j], g) > threshold){
         /* Add (i, neighbours_i[j]) to edge_list */
         //printf("2Adding edge (%lu, %lu) at position %lu because its ECC is %Lf > %Lf\n", i, (unsigned long)neighbours_i[j], edge_list[0].s, get_ecc(i, neighbours_i[j], g), threshold);
         edge_list[++edge_list[0].s].s = i;
