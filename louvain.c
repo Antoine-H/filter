@@ -135,16 +135,18 @@ adjlist* readadjlist(char* input){
   g->e=0;
   file=fopen(input,"r");//first reading to compute the degrees
   while (fscanf(file,"%lu %lu", &u, &v)==2) {
-    g->e++;
-    g->n=max3(g->n,u,v);
-    if (g->n+1>=n1) {
-      n2=g->n+NNODES;
-      d=realloc(d,n2*sizeof(unsigned long));
-      bzero(d+n1,(n2-n1)*sizeof(unsigned long));
-      n1=n2;
+    if (u > v) {
+      g->e++;
+      g->n=max3(g->n,u,v);
+      if (g->n+1>=n1) {
+        n2=g->n+NNODES;
+        d=realloc(d,n2*sizeof(unsigned long));
+        bzero(d+n1,(n2-n1)*sizeof(unsigned long));
+        n1=n2;
+      }
+      d[u]++;
+      d[v]++;
     }
-    d[u]++;
-    d[v]++;
   }
   fclose(file);
 
@@ -162,8 +164,10 @@ adjlist* readadjlist(char* input){
 
   file=fopen(input,"r");//secong reading to fill the adjlist
   while (fscanf(file,"%lu %lu", &u, &v)==2) {
-    g->adj[ g->cd[u] + d[u]++ ]=v;
-    g->adj[ g->cd[v] + d[v]++ ]=u;
+    if (u > v) {
+      g->adj[ g->cd[u] + d[u]++ ]=v;
+      g->adj[ g->cd[v] + d[v]++ ]=u;
+    }
   }
   fclose(file);
 
@@ -317,7 +321,10 @@ void free_parts(unsigned long **parts, unsigned size){
   free(parts);
 }
 
-long double ecc_threshold(long double modul){
+long double ecc_threshold(long double modul, unsigned long n){
+  /* This is a correlation that should be proved and made more accurate */
+  if (n < 20000)
+    modul += 71.2108*modul/n;
   return -1.414*(-modul+1)+0.991;
 }
 
@@ -448,21 +455,24 @@ long double get_ecc(unsigned long u, unsigned long v, adjlist* g){
   return (long double)get_number_common_neighbours(u, v, g) / min(deg_u, deg_v);
 }
 
-edge* get_ecc_above(adjlist* g, long double threshold){
-  edge* edge_list;
+weighted_edge* get_ecc_above(adjlist* g, long double threshold){
+  weighted_edge* edge_list;
   unsigned long i, j, k, n;
   unsigned long *neighbours_i, *neighbours_j;
+  long double ecc;
 
-  // n = g->n/2;
-  n = 1;
-  printf("Allocating %lu edges, wich is %zu bytes\n", (n+1)*g->n, (n+1)*g->n*sizeof(edge));
-  edge_list = malloc_wrapper(sizeof(edge)*++n*g->n);
+  n = 10;
+  printf("%lu\n", n);
+  printf("Allocating %lu edges, wich is %zu bytes\n", (n+1)*g->n, (n+1)*g->n*sizeof(weighted_edge));
+  edge_list = malloc_wrapper(sizeof(weighted_edge)*++n*g->n);
   edge_list[0].s = 0;
   edge_list[0].t = 0;
 
   /* For i in nodes(g) */
   for (i=0; i<g->n; i++){
-    printf("Scanning node %lu out of %lu\n", i, g->n);
+    if (i % 1000 == 0) {
+        printf("Scanning node %lu out of %lu\n", i+1, g->n);
+    }
     //print_neighbours(i, g);
     neighbours_i = get_neighbours(i, g);
     /* For j in neighbours(i) */
@@ -472,56 +482,48 @@ edge* get_ecc_above(adjlist* g, long double threshold){
       /* For k in neighbours(j) */
       neighbours_j = get_neighbours(neighbours_i[j], g);
       for (k=1; k<neighbours_j[0]; k++){
-        if (i <= neighbours_j[k] && get_ecc(i, neighbours_j[k], g) > threshold){
-          /* Add (i, neighbours_j[k]) to edge_list */
-          //printf("Adding edge (%lu, %lu) at position %lu because its ECC is %Lf > %Lf\n", i, (unsigned long)neighbours_j[k], edge_list[0].s, get_ecc(i, neighbours_j[k], g), threshold);
+        ecc = get_ecc(i, neighbours_j[k], g);
+        if (i < neighbours_j[k] && ecc > threshold){
           edge_list[++edge_list[0].s].s = i;
           edge_list[edge_list[0].s].t = neighbours_j[k];
-          //printf("Siz edge_list is %lu. Alld space is %lu edges\n", edge_list[0].s, n*g->n);
+          edge_list[edge_list[0].s].w = ecc;
           /* -1 because the size of the array is edge_list[0].s+1 */
           if (edge_list[0].s >= (n*g->n)-1){
             printf("Allocating %lu edges because edge_list already contains %lu edges\n", (n+1)*g->n, edge_list[0].s);
-            edge_list = realloc_wrapper(edge_list, ++n*g->n, sizeof(edge));
+            edge_list = realloc_wrapper(edge_list, ++n*g->n, sizeof(weighted_edge));
           }
         }
       }
-      if (i <= neighbours_i[j] && get_ecc(i, neighbours_i[j], g) > threshold){
-        /* Add (i, neighbours_i[j]) to edge_list */
-        //printf("2Adding edge (%lu, %lu) at position %lu because its ECC is %Lf > %Lf\n", i, (unsigned long)neighbours_i[j], edge_list[0].s, get_ecc(i, neighbours_i[j], g), threshold);
+      ecc = get_ecc(i, neighbours_i[j], g);
+      if (i < neighbours_i[j] && ecc > threshold){
         edge_list[++edge_list[0].s].s = i;
         edge_list[edge_list[0].s].t = neighbours_i[j];
-        //printf("Size of edge_list is %lu. Allocated space is %lu edges\n", edge_list[0].s, n*g->n);
+        edge_list[edge_list[0].s].w = ecc;
         /* -1 because the size of the array is edge_list[0].s+1 */
         if (edge_list[0].s >= (n*g->n)-1){
           printf("Allocating %lu edges because edge_list already contains %lu edges\n", (n+1)*g->n, edge_list[0].s);
-          edge_list = realloc_wrapper(edge_list, ++n*g->n, sizeof(edge));
+          edge_list = realloc_wrapper(edge_list, ++n*g->n, sizeof(weighted_edge));
         }
       }
-      //printf("edge_list[0].s = %lu, n = %lu, g->n = %lu, n*g->n = %lu\n", edge_list[0].s, n, g->n, n*g->n);
       free(neighbours_j);
     }
     free(neighbours_i);
   }
 
-  edge_list = realloc_wrapper(edge_list, edge_list[0].s+1, sizeof(edge));
+  edge_list = realloc_wrapper(edge_list, edge_list[0].s+1, sizeof(weighted_edge));
   return edge_list;
 }
 
 //main function
 int main(int argc,char** argv){
   adjlist* g;
-  //unsigned long **parts;
   unsigned long *part;
-  unsigned long i, j;
+  unsigned long i;
   unsigned int seed;
   unsigned nb_runs = strtoul(argv[3], NULL, 10);
-  //char* out_file;
   long double modul = 0;
   long double ecc_thresh = 0;
-  long double ecc = 0;
-  edge *edges;
-
-  //parts = malloc((nb_runs+1) * sizeof(unsigned long*));
+  weighted_edge *edges;
 
   //Get random seed
   if (get_random(seed)){
@@ -535,90 +537,41 @@ int main(int argc,char** argv){
   }
 
   //printf("Reading edgelist from file %s and building adjacency array\n", argv[1]);
+  //t1 = time(NULL);
   g = readadjlist(argv[1]);
   //printf("Number of nodes: %lu\n", g->n);
   //printf("Number of edges: %llu\n", g->e);
 
-  /*
-  //using more memory but reading the input text file only once
-  edgelist* el;
-  printf("Reading edgelist from file %s\n", argv[1]);
-  el=readedgelist(argv[1]);
-  printf("Number of nodes: %lu\n", el->n);
-  printf("Number of edges: %llu\n", el->e);
-  t1 = time(NULL);
-  printf("- Time = %ldh%ldm%lds\n", (t1-t0)/3600, ((t1-t0)%3600)/60, ((t1-t0)%60));
-  printf("Building adjacency array\n");
-  g=mkadjlist(el);
-  */
-
-  //t1 = time(NULL);
   //printf("- Time to load the graph = %ldh%ldm%lds\n", (t1-t0)/3600, ((t1-t0)%3600)/60, ((t1-t0)%60));
-
-  /*
-  if((out_file = malloc(strlen(argv[2])+sizeof(char)*((int)log10(nb_runs)+2))) != NULL){
-    out_file[0] = '\0';  // ensures the memory is an empty string
-  } else {
-    fprintf(stderr,"Malloc failed!\n");
-    exit(1);
-  }
-  */
+  //t2 = time(NULL);
 
   part = malloc(g->n * sizeof(unsigned long));
   for (int j=1; j<=nb_runs; j++){
-    // printf("j = %i, argv[3] = %i\n", j, nb_runs);
-
-    //printf("Starting louvain\n");
     modul += louvainComplete(g, part);
-    //t2 = time(NULL);
-    //printf("- Time to compute communities = %ldh%ldm%lds\n", (t2-t1)/3600, ((t2-t1)%3600)/60, ((t2-t1)%60));
-
-    /*
-    get_file_name(argv[2], out_file, j);
-    printf("argv[2] = %s\n", argv[2]);
-    printf("out_file = %s\n", out_file);
-    
-    printf("Prints result in file %s\n", out_file);
-    FILE* out = fopen(out_file, "w");
-    for(i = 0; i < g->n; i++){
-      fprintf(out, "%lu %lu\n", i, parts[j][i]);
-    }
-    fclose(out);
-    */
-
   }
   free(part);
-  /* Print communities */
-  /*
-  for(i = 0; i < g->n; i++){
-    printf("%lu %lu\n", i, parts[j][i]);
-  }
-  */
+
   modul /= nb_runs;
-  ecc_thresh = ecc_threshold(modul);
+  ecc_thresh = ecc_threshold(modul, g->n);
   printf("After %u runs of Louvain, the average modularity is %Lf, and the threshold on the ECC is %Lf\n", nb_runs, modul, ecc_thresh);
-  //t3 = time(NULL);
-  //printf("- Time to export communities = %ldh%ldm%lds\n", (t3-t2)/3600, ((t3-t2)%3600)/60, ((t3-t2)%60));
-
-  //printf("- Overall time = %ldh%ldm%lds\n", (t3-t0)/3600, ((t3-t0)%3600)/60, ((t3-t0)%60));
-
-  i = 1;
-  j = 60;
-
-  print_neighbours(i, g);
-  print_neighbours(j, g);
-
-  ecc = get_ecc(i, j, g);
-  printf("The ECC of %lu and %lu is %Lf\n", i, j, ecc);
 
   /* Compute ECC of some pairs */
   edges = get_ecc_above(g, ecc_thresh);
-  printf("%lu edges found out of %llu original edges and %lu nodes\n", edges[0].s, g->e, g->n);
+  printf("%lu edges found out of %llu original edges and %lu nodes\n",
+         edges[0].s, g->e, g->n);
 
-  /* Build filtered */
+  //t3 = time(NULL);
+  //printf("- Time to export communities = %ldh%ldm%lds\n", (t3-t2)/3600, ((t3-t2)%3600)/60, ((t3-t2)%60));
+  //printf("- Overall time = %ldh%ldm%lds\n", (t3-t0)/3600, ((t3-t0)%3600)/60, ((t3-t0)%60));
 
-  /* free(out_file); */
-  //free_parts(parts, nb_runs);
+  /* Write to file */
+  printf("Prints result in file %s\n", argv[2]);
+  FILE* out = fopen(argv[2], "w");
+  for(i = 1; i < edges[0].s; i++){
+    fprintf(out, "%lu %lu %Lf\n", edges[i].s, edges[i].t, edges[i].w);
+  }
+  fclose(out);
+
   free(edges);
   free_graph(g);
 
