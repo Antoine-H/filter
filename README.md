@@ -31,11 +31,12 @@ type "make"
 
 ## Example
 
-- python lfr.py 10000 0.6
-- ./louvain examples/lfr_graph examples/filtered_graph 10
-- python louvain.py examples/filtered_graph
+- lfr/benchmark -N 10000 -k 20 -maxk 50 -t1 2 -t2 3 -minc 10 -maxc 50 -muw 0.6 -mut 0.6
+- expand -t 1 network.dat | cut -d " " -f 1,2  > network_formatted.dat
+- ./louvain network_formatted filtered_graph.dat 10
+- python louvain.py filtered_graph.dat
 
-- python louvain.py examples/lfr_graph
+- python louvain.py network_formatted.dat
 
 ## Initial contributors:  
 

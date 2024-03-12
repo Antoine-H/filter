@@ -463,7 +463,7 @@ weighted_edge* get_ecc_above(adjlist* g, long double threshold){
 
   n = 10;
   printf("%lu\n", n);
-  printf("Allocating %lu edges, wich is %zu bytes\n", (n+1)*g->n, (n+1)*g->n*sizeof(weighted_edge));
+  // printf("Allocating %lu edges, wich is %zu bytes\n", (n+1)*g->n, (n+1)*g->n*sizeof(weighted_edge));
   edge_list = malloc_wrapper(sizeof(weighted_edge)*++n*g->n);
   edge_list[0].s = 0;
   edge_list[0].t = 0;
@@ -489,7 +489,7 @@ weighted_edge* get_ecc_above(adjlist* g, long double threshold){
           edge_list[edge_list[0].s].w = ecc;
           /* -1 because the size of the array is edge_list[0].s+1 */
           if (edge_list[0].s >= (n*g->n)-1){
-            printf("Allocating %lu edges because edge_list already contains %lu edges\n", (n+1)*g->n, edge_list[0].s);
+            // printf("Allocating %lu edges because edge_list already contains %lu edges\n", (n+1)*g->n, edge_list[0].s);
             edge_list = realloc_wrapper(edge_list, ++n*g->n, sizeof(weighted_edge));
           }
         }
@@ -501,7 +501,7 @@ weighted_edge* get_ecc_above(adjlist* g, long double threshold){
         edge_list[edge_list[0].s].w = ecc;
         /* -1 because the size of the array is edge_list[0].s+1 */
         if (edge_list[0].s >= (n*g->n)-1){
-          printf("Allocating %lu edges because edge_list already contains %lu edges\n", (n+1)*g->n, edge_list[0].s);
+          // printf("Allocating %lu edges because edge_list already contains %lu edges\n", (n+1)*g->n, edge_list[0].s);
           edge_list = realloc_wrapper(edge_list, ++n*g->n, sizeof(weighted_edge));
         }
       }
