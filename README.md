@@ -33,7 +33,7 @@ type "make"
 
 - lfr/benchmark -N 10000 -k 20 -maxk 50 -t1 2 -t2 3 -minc 10 -maxc 50 -muw 0.6 -mut 0.6
 - expand -t 1 network.dat | cut -d " " -f 1,2  > network_formatted.dat
-- ./louvain network_formatted filtered_graph.dat 10
+- ./louvain network_formatted.dat filtered_graph.dat 10
 - python last_exec.py filtered_graph.dat
 
 - python last_exec.py network_formatted.dat
