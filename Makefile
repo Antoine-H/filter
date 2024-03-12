@@ -8,7 +8,9 @@ louvain: partition.o louvain.o
 	$(CC) -o louvain partition.o louvain.o $(CFLAGS)
 
 clean:
-	rm *.o louvain
+	rm -f *.o
+	rm -f louvain
+	rm -f *dat
 
 %.o: %.c %.h
 	$(CC) -o $@ -c $< $(CFLAGS)
