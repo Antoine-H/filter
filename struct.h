@@ -7,6 +7,13 @@ typedef struct {
 } edge;
 
 
+typedef struct {
+  unsigned long s;
+  unsigned long t;
+  long double w;
+} weighted_edge;
+
+
 //edge list structure:
 typedef struct {
   unsigned long n;//number of nodes
